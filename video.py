@@ -18,6 +18,7 @@ class Webcam:
         self.stickers         = self.get_sticker_coordinates('main')
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
+        #self.camera_trigger = camera_trigger
 
     def get_sticker_coordinates(self, name):
         """
@@ -81,6 +82,11 @@ class Webcam:
         }
         return notation[color]
 
+    #@TODO Implement this method
+    def take_picture(self):
+        pass
+
+
     def scan(self):
         """
         Open up the webcam and scans the 9 regions in the center
@@ -116,7 +122,9 @@ class Webcam:
                 state[index] = color_name
 
                 # update when space bar is pressed.
-                if key == 32:
+                
+                #@TODO FIX TAKE PICTURE FUNCTION
+                if key == 27:
                     preview = list(state)
                     self.draw_preview_stickers(frame, state)
                     face = self.color_to_notation(state[4])

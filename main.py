@@ -8,35 +8,34 @@ from sys import exit as Die
 import kociemba
 from combiner import combine
 from video import webcam
-
+from modbus_comms import ModbusClient
 
 not_testing = True
 
 if __name__ == '__main__':
 
-    while True:
+    client = ModbusClient("158.38.140.61", port=2000)
 
-        if not_testing:
+    # Maybe initialize inside while loop?
+    cube_state = webcam.scan()
 
-            # represents the state or a negative-scan (False)
-            cube_state = webcam.scan()
+    while client.is_connected:
 
-            if not cube_state:
-                print("Did not scan in all 6 sides.")
-                Die(1)
+        status = client.get_picture_command()
+        if status:
 
-            unsolvedState = combine.sides(cube_state)
-            algorithm = kociemba.solve(unsolvedState)
+            #@TODO: FIX TAKE PICTURE FUNCTION
+            #webcam.take_picture()
+            client.reset_picture_command()
 
-        else:
-            test_cube = "BBURUDBFUFFFRRFUUFLULUFUDLRRDBBDBDBLUDDFLLRRBRLLLBRDDF"
-            test_answer = kociemba.solve(test_cube)
-
-            size_list = []
-            words = test_answer.split(" ")
-            for w in words:
-                size_list.append(w)
-            print("Solution:")
-            print(test_answer)
-            print("with: " + str(len(size_list)) + " moves")
+        # represents the state or a negative-scan (False)
+        if not cube_state:
+            print("Did not scan in all 6 sides.")
             Die(1)
+
+        unsolvedState = combine.sides(cube_state)
+        algorithm = kociemba.solve(unsolvedState)
+
+
+        # test_cube = "BBURUDBFUFFFRRFUUFLULUFUDLRRDBBDBDBLUDDFLLRRBRLLLBRDDF"
+        # test_answer = kociemba.solve(test_cube)
