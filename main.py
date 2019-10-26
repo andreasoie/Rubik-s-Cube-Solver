@@ -9,6 +9,8 @@ import kociemba
 from combiner import combine
 from video import webcam
 from modbus_comms import ModbusClient
+import threading
+import queue
 
 not_testing = True
 
@@ -16,18 +18,18 @@ if __name__ == '__main__':
 
     client = ModbusClient("158.38.140.61", port=2000)
 
-    # Maybe initialize inside while loop?
-    cube_state = webcam.scan()
+    # We run our image-analyzing in a thread, and update it through coil_que
+    coil_queue = queue.Queue()
+    threading.Thread(target= webcam.scan, args=(coil_queue,)).start()
 
     while client.is_connected:
 
-        status = client.get_picture_command()
-        if status:
+        # Read only 1's (True values)
+        coil_value = client.get_picture_command()
+        coil_queue.put(coil_value)
+        client.reset_picture_command()
 
-            #@TODO: FIX TAKE PICTURE FUNCTION
-            #webcam.take_picture()
-            client.reset_picture_command()
-
+        """
         # represents the state or a negative-scan (False)
         if not cube_state:
             print("Did not scan in all 6 sides.")
@@ -37,5 +39,6 @@ if __name__ == '__main__':
         algorithm = kociemba.solve(unsolvedState)
 
 
-        # test_cube = "BBURUDBFUFFFRRFUUFLULUFUDLRRDBBDBDBLUDDFLLRRBRLLLBRDDF"
-        # test_answer = kociemba.solve(test_cube)
+        test_cube = "BBURUDBFUFFFRRFUUFLULUFUDLRRDBBDBDBLUDDFLLRRBRLLLBRDDF"
+        test_answer = kociemba.solve(test_cube)
+        """

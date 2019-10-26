@@ -9,6 +9,7 @@ from sys import exit as Die
 import sys
 import cv2
 from colordetection import ColorDetector
+import queue
 
 
 class Webcam:
@@ -87,7 +88,7 @@ class Webcam:
         pass
 
 
-    def scan(self):
+    def scan(self, coil_value):
         """
         Open up the webcam and scans the 9 regions in the center
         and show a preview in the left upper corner.
@@ -99,6 +100,9 @@ class Webcam:
         :returns: dictionary
         """
 
+        picture_command = 0
+        numb_of_sides = 0
+
         sides   = {}
         preview = ['white','white','white',
                    'white','white','white',
@@ -109,7 +113,6 @@ class Webcam:
         while True:
             _, frame = self.cam.read()
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            key = cv2.waitKey(10) & 0xff
 
             # init certain stickers.
             self.draw_main_stickers(frame)
@@ -122,16 +125,22 @@ class Webcam:
                 state[index] = color_name
 
                 # update when space bar is pressed.
-                
-                #@TODO FIX TAKE PICTURE FUNCTION
-                if key == 27:
-                    preview = list(state)
-                    self.draw_preview_stickers(frame, state)
-                    face = self.color_to_notation(state[4])
-                    notation = [self.color_to_notation(color) for color in state]
-                    sides[face] = notation
-                    print("sides: " + str(len(sides)))
+                try:    
+                    picture_command = coil_value.get(timeout=0) # 0 seconds of delay
+                    if picture_command == 1:  
+                        preview = list(state)
+                        self.draw_preview_stickers(frame, state)
+                        face = self.color_to_notation(state[4])
+                        notation = [self.color_to_notation(color) for color in state]
+                        sides[face] = notation
+                        numb_of_pics += 1
+                        picture_command = 0
+                        print("Took picture!")
 
+                except queue.Empty:
+                    pass
+
+            
             # show the new stickers
             self.draw_current_stickers(frame, state)
 
@@ -139,8 +148,8 @@ class Webcam:
             text = 'scanned sides: {}/6'.format(len(sides))
             cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
 
-            # quit on escape.
-            if key == 27:
+            # quit when we've got 6 sides.
+            if numb_of_sides == 6:
                 break
 
             # show result

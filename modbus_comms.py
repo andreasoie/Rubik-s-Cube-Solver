@@ -45,6 +45,7 @@ class ModbusClient():
         """
         coil_info = self.client.read_coils(0, 1, unit=1)
         is_picture_ready = coil_info.bits[0]
+        print(is_picture_ready)
         return is_picture_ready
 
         #TODO: Double check if this method works
