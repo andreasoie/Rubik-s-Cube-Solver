@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pymodbus.client.sync import ModbusTcpClient
-
+import time
 
 
 class ModbusClient():
@@ -20,14 +20,14 @@ class ModbusClient():
         return self.connection_status
 
     
-    def send_int(self, your_address, your_value):
+    def send_move(self, your_address, your_value):
         """
         Helper method for sending over rubiks-move-commands, sending 
         each move as a parsed String to represent a integer
         Check command_tables in folder for further information
         """
-        reponse = self.client.write_register(your_address, your_value, unit=1)
-        return reponse
+        self.client.write_register(your_address, your_value, unit=1)
+        
 
     def read_int(self, your_address, your_value):
         """
@@ -45,7 +45,6 @@ class ModbusClient():
         """
         coil_info = self.client.read_coils(0, 1, unit=1)
         is_picture_ready = coil_info.bits[0]
-        print(is_picture_ready)
         return is_picture_ready
 
         #TODO: Double check if this method works
@@ -54,7 +53,7 @@ class ModbusClient():
         Set the take picture coil value to 0
         Is used after we've taken the picture
         """
-        self.client.write_coils(0, 0)
+        self.client.write_coil(0, 0, unit=1)
         
     def set_confirm_picture_taken(self):
         """
@@ -65,26 +64,52 @@ class ModbusClient():
         #picture_taken = coil_info.bits[1]
         #return picture_taken
 
+    # Helper method to convert notation to integers
+    def get_return_code(self, value):
+        if value == "B": return 1
+        elif value == "U": return 2
+        elif value == "L": return 3
+        elif value == "D": return 4
+        elif value == "R": return 5
+        elif value == "F": return 6
+        
+        elif value == "B'": return 7
+        elif value == "U'": return 8
+        elif value == "L'": return 9
+        elif value == "D'": return 10
+        elif value == "R'": return 11
+        elif value == "F'": return 12
+        
+        elif value == "B2": return 13
+        elif value == "U2": return 14
+        elif value == "L2": return 15
+        elif value == "D2": return 16
+        elif value == "R2": return 17
+        elif value == "F2": return 18
+
+    def send_algorithm(self, answer):
+        data = answer.split(" ")
+        for x in range(len(data)):
+            val = int(self.get_return_code(data[x]))
+            self.send_move(x, val)
+
 
 if __name__ == "__main__":
 
-    client = ModbusClient("158.38.140.61", port=2000)
+    client = ModbusClient("10.22.177.89", port=502)
     
     while client.is_connected:
-        
-        cam_command = client.get_picture_command()
-        if cam_command:
-            """
-            preview = list(state)
-            self.draw_preview_stickers(frame, state)
-            face = self.color_to_notation(state[4])
-            notation = [self.color_to_notation(color) for color in state]
-            sides[face] = notation
-            print("sides: " + str(len(sides)))
-            """
-            client.reset_picture_command()
 
-        # Continue with our other shit
+        # delay
+        time.sleep(0.5)
+        
+        x = client.get_picture_command()
+        print("Coil: " + str(x))
+
+        # reset
+        client.reset_picture_command()
+
+
 
         
 

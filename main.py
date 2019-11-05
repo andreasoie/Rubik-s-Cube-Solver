@@ -7,38 +7,75 @@
 from sys import exit as Die
 import kociemba
 from combiner import combine
-from video import webcam
+from video import WebCam
 from modbus_comms import ModbusClient
 import threading
 import queue
+import cv2
 
-not_testing = True
+
+# For debug / user-experience
+show = True
 
 if __name__ == '__main__':
 
-    client = ModbusClient("158.38.140.61", port=2000)
+    #client = ModbusClient("158.38.140.61", port=2000)
+    camera = WebCam()
+    
+    
+    trigger = 0
+    side_count = 0
+    
+    while True:
+        
+        frame = camera.get_frame()
 
-    # We run our image-analyzing in a thread, and update it through coil_que
-    coil_queue = queue.Queue()
-    threading.Thread(target= webcam.scan, args=(coil_queue,)).start()
+        # total sides scanned
+        #side_count = len(camera.get_sides())
+        #print("Total sides: " + str(side_count))
+        
+        #if side_count == 6:
+        #    camera.shutdown_camera()
+        #    cube_state = camera.get_sides()
+        #    unsolved_state = combine.sides(cube_state)
+        #    algorithm = kociemba.solve(unsolved_state)
+        #    print("Answer: " + algorithm)
+        #    break
+        
+        camera.scan(frame, show, trigger)
+        key = cv2.waitKey(5) & 0xFF
+        if key == 27:
+            camera.shutdown_camera()
+            break
 
-    while client.is_connected:
+        #trigger = int(input("Enter: "))
+        
+        #if trigger == 1:
+        #        camera.scan(frame, show, trigger)
+        #        trigger = 0
 
-        # Read only 1's (True values)
-        coil_value = client.get_picture_command()
-        coil_queue.put(coil_value)
-        client.reset_picture_command()
-
+        #print("Lap completed.")
+        
         """
-        # represents the state or a negative-scan (False)
-        if not cube_state:
-            print("Did not scan in all 6 sides.")
-            Die(1)
+        total_sides = len(camera.get_sides())
+        
+        if total_sides == 6:
 
-        unsolvedState = combine.sides(cube_state)
-        algorithm = kociemba.solve(unsolvedState)
+            unsolved_state = camera.get_sides()
+            algorithm = kociemba.solve(unsolved_state)
+            print("Answer: " + algorithm)
+            # Send the answer ( algorithm ) to the server 
+            break
 
+        else:
 
-        test_cube = "BBURUDBFUFFFRRFUUFLULUFUDLRRDBBDBDBLUDDFLLRRBRLLLBRDDF"
-        test_answer = kociemba.solve(test_cube)
+            trigger = client.get_picture_command()
+
+            if trigger:
+                camera.scan():
+                total_sides += 1
+                client.reset_picture_command()
         """
+
+                    
+            

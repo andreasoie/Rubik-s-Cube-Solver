@@ -14,7 +14,7 @@ class ColorDetection:
         """
         (h,s,v) = hsv
         #print((h,s,v))
-        if h < 15 and v < 100:
+        if h > 150 and s > 170 and v > 100:
             return 'red'
         if h <= 10 and v > 100:
             return 'orange'

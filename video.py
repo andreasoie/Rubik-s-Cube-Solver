@@ -9,17 +9,25 @@ from sys import exit as Die
 import sys
 import cv2
 from colordetection import ColorDetector
-import queue
+import time
 
-
-class Webcam:
+class WebCam:
 
     def __init__(self):
         self.cam              = cv2.VideoCapture(0)
         self.stickers         = self.get_sticker_coordinates('main')
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
-        #self.camera_trigger = camera_trigger
+        self.sides   = {}
+        self.preview = ['white','white','white','white','white','white','white','white','white']
+        self.state   = [0,0,0,0,0,0,0,0,0]
+
+    def get_frame(self):
+        _, frame = self.cam.read()
+        return frame
+
+    def get_sides(self):
+        return self.sides
 
     def get_sticker_coordinates(self, name):
         """
@@ -60,6 +68,7 @@ class Webcam:
         for index,(x,y) in enumerate(self.current_stickers):
             cv2.rectangle(frame, (x,y), (x+32, y+32), ColorDetector.name_to_rgb(state[index]), -1)
 
+
     def draw_preview_stickers(self, frame, state):
         """Draws the 9 preview stickers in the frame."""
         for index,(x,y) in enumerate(self.preview_stickers):
@@ -83,12 +92,14 @@ class Webcam:
         }
         return notation[color]
 
-    #@TODO Implement this method
-    def take_picture(self):
-        pass
-
-
-    def scan(self, coil_value):
+    def shutdown_camera(self):
+        self.cam.release()
+        cv2.destroyAllWindows()
+        print("Releasing camera")
+        print("Destroying window")
+        
+    # param: coil_value
+    def scan(self, frame, debug, take_picture):
         """
         Open up the webcam and scans the 9 regions in the center
         and show a preview in the left upper corner.
@@ -99,64 +110,53 @@ class Webcam:
 
         :returns: dictionary
         """
+        for x in range(5):
+            if debug:
+                #init certain stickers.
+                self.draw_main_stickers(frame)
+                self.draw_preview_stickers(frame, self.preview)
 
-        picture_command = 0
-        numb_of_sides = 0
-
-        sides   = {}
-        preview = ['white','white','white',
-                   'white','white','white',
-                   'white','white','white']
-        state   = [0,0,0,
-                   0,0,0,
-                   0,0,0]
-        while True:
-            _, frame = self.cam.read()
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-            # init certain stickers.
-            self.draw_main_stickers(frame)
-            self.draw_preview_stickers(frame, preview)
-
             for index,(x,y) in enumerate(self.stickers):
                 roi          = hsv[y:y+32, x:x+32]
                 avg_hsv      = ColorDetector.average_hsv(roi)
                 color_name   = ColorDetector.get_color_name(avg_hsv)
-                state[index] = color_name
+                self.state[index] = color_name
 
-                # update when space bar is pressed.
-                try:    
-                    picture_command = coil_value.get(timeout=0) # 0 seconds of delay
-                    if picture_command == 1:  
-                        preview = list(state)
-                        self.draw_preview_stickers(frame, state)
-                        face = self.color_to_notation(state[4])
-                        notation = [self.color_to_notation(color) for color in state]
-                        sides[face] = notation
-                        numb_of_pics += 1
-                        picture_command = 0
-                        print("Took picture!")
+            if take_picture == 1:
+                self.preview = list(self.state)
+                if debug:
+                    self.draw_preview_stickers(frame, self.state)
+                face = self.color_to_notation(self.state[4])
+                notation = [self.color_to_notation(color) for color in self.state]
+                self.sides[face] = notation
+                
+                # Face = the middle color
+                # Places the list of colors on the correct side given by the face(what side it is)            
+                # State = array of 9 colors representing the side
+                # State: ['blue', 'blue', 'green', 'white', 'blue', 'white', 'orange', 'orange', 'green']
+                # Notation = array of 9 letters represetning the color
+                # Notation: ['B', 'B', 'D', 'U', 'B', 'U', 'L', 'L', 'F']
+                # Face = a string of 1 letter representing the side. ex. B = blue
+            if debug:
+                self.draw_current_stickers(frame, self.state)
+                text = 'scanned sides: {}/6'.format(len(self.sides))
+                cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                cv2.imshow("Rubik's Cube camera", frame)
+                
 
-                except queue.Empty:
-                    pass
 
-            
-            # show the new stickers
-            self.draw_current_stickers(frame, state)
+if __name__ == "__main__":
 
-            # append amount of scanned sides
-            text = 'scanned sides: {}/6'.format(len(sides))
-            cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+    cap = WebCam()
 
-            # quit when we've got 6 sides.
-            if numb_of_sides == 6:
-                break
+    while True:
+        frame = cap.get_frame()
+        cap.scan(frame, True, 1)
+        key = cv2.waitKey(5) & 0xFF
+        if key == 27:
+            cap.shutdown_camera()
+            break
 
-            # show result
-            cv2.imshow("default", frame)
-
-        self.cam.release()
-        cv2.destroyAllWindows()
-        return sides if len(sides) == 6 else False
-
-webcam = Webcam()
+        
+    
