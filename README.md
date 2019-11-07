@@ -1,7 +1,8 @@
 # Rubik-s-Cube-Solver
-A rubik's cube solver written in python 3
+##### Raspberry PI Raspian 3/4   
+##### Python 3+    
 
-## Simple and clean way of downloading OpenCV on Raspberry PI (Raspian)    
+## OpenCV on Raspberry PI (Raspian)    
  
 sudo apt-get update    
 sudo apt-get upgrade    
@@ -10,7 +11,7 @@ sudo apt-get upgrade
 apt list python*opencv*     
 sudo apt install python3-opencv     
 
-## Installing the Kociemba-solver on Raspberry PI (Raspian)     
+## Kociamba  
 
 ##### Install the required libffi systemm library beforehand      
 sudo apt-get install libffi-dev     
