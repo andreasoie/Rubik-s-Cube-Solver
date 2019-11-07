@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get upgrade    
 
 ##### Retrieve available stable releases    
-apt list python*opencv*     
+apt list python*opencv*      (stars before/after opencv)
 sudo apt install python3-opencv     
 
 ## Kociamba  
