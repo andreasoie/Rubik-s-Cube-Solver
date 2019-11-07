@@ -27,7 +27,30 @@ class ModbusClient():
         Check command_tables in folder for further information
         """
         self.client.write_register(your_address, your_value, unit=1)
+
+
+    def convert_sides_to_string(self, sides):
+
+        color_string = []
         
+        for items in sides.values():
+            color_string.append(items)
+
+        return color_string
+
+    def update_color_state(self, color_state):
+
+        color_list = self.convert_sides_to_string(color_state)
+
+        # starting address for sending  colors
+        address = 30
+        for lists in color_list:
+            for color in lists:
+                self.send_color_code(address, color)
+                address += 1
+
+    def send_color_code(self, addr, val):
+        self.client.write_register(addr, val, unit=1)
 
     def read_int(self, your_address, your_value):
         """
@@ -86,6 +109,14 @@ class ModbusClient():
         elif value == "D2": return 16
         elif value == "R2": return 17
         elif value == "F2": return 18
+
+    def get_notation_to_code(self, notation):
+        if notation == "U": return 0   # white
+        elif notation == "F": return 1 # green
+        elif notation == "L": return 4 # red
+        elif notation == "B": return 5 # blue
+        elif notation == "R": return 3 # orange
+        elif notation == "D": return 2 # yellow
 
     def send_algorithm(self, answer):
         data = answer.split(" ")

@@ -22,6 +22,8 @@ if __name__ == '__main__':
     cam_cap = cv2.VideoCapture(0)
     camera = WebCam(cam_cap)
 
+    key = cv2.waitKey(5) & 0xFF
+
     while client.is_connected():
 
         # Read command-address
@@ -29,11 +31,14 @@ if __name__ == '__main__':
         
         camera.scan(feedback)
 
-        if feedback:
         # read scan-command from address
+        if feedback:
+            # client.update_color_addresses() Send 54 values to addresses
             client.set_confirm_picture_taken()
             client.reset_picture_command()
 
+        color_state = camera.get_sides()
+        client.update_color_state(color_state)
         
         if len(camera.get_sides()) == 6:
             camera.shutdown_camera()
@@ -44,9 +49,8 @@ if __name__ == '__main__':
             client.send_algorithm(algo)
             break
 
-        key = cv2.waitKey(5) & 0xFF
         if key == 27:
             camera.shutdown_camera()
             break
         
-            
+        

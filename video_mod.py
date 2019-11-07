@@ -25,9 +25,6 @@ class WebCam():
     def get_sides(self):
         return self.sides
 
-    def get_sidecount(self):
-        return self.sidecount
-
     def get_sticker_coordinates(self, name):
         """
         Every array has 2 values: x and y.
@@ -100,8 +97,6 @@ class WebCam():
         
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        key = cv2.waitKey(10) & 0xff
-
         self.draw_main_stickers(frame)
         self.draw_preview_stickers(frame, self.preview)
 
@@ -132,9 +127,10 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
     web = WebCam(cap)
+    test_trigger = False
 
     while True:
-        feedback = web.scan()
+        web.scan(test_trigger)
         key = cv2.waitKey(5) & 0xFF
         if key == 27:
             cap.shutdown_camera()
