@@ -1,8 +1,8 @@
 # Rubik-s-Cube-Solver
-##### Raspberry PI Raspian 3/4   
-##### Python 3+    
+**Raspberry PI Raspian 3/4    
+**Python 3+      
 
-## OpenCV on Raspberry PI (Raspian)    
+## OpenCV  
  
 sudo apt-get update    
 sudo apt-get upgrade    
