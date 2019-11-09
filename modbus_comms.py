@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Author        : Andreas Øie
+# Created       : 09.11.2019
 
 from pymodbus.client.sync import ModbusTcpClient
 import time
 
 
 class ModbusClient():
+
+    """
+    This class is tailored to represent a Client talking with a PLC-server,
+    communicating by reading / writing values to given addresses
+    """
 
     def __init__(self, address, port):
         self.address = address
@@ -15,7 +22,7 @@ class ModbusClient():
 
     def is_connected(self):
         """
-        :returns: True if connection is active, False otherwise
+        :return: True if connection is active, False otherwise
         """
         return self.connection_status
 
@@ -23,28 +30,27 @@ class ModbusClient():
     def send_move(self, your_address, your_value):
         """
         Helper method for sending over rubiks-move-commands, sending 
-        each move as a parsed String to represent a integer
+        each move as a parsed String to represent a color-code
         Check command_tables in folder for further information
         """
         self.client.write_register(your_address, your_value, unit=1)
 
-
-    def convert_sides_to_string(self, sides):
-
-        color_string = []
-        
-        for items in sides.values():
-            color_string.append(items)
-
-        return color_string
-
     def get_address_side(self, side):
-            # starting address for each side
+        """
+        Helper method for addressing correct side-code
+        as a key for retrieving the correct values (starting address),
+        for each spesific side 
+        :param: 
+        :returns: the 
+        """
         address_side = { 0: 30, 1 : 39, 2 : 48, 3 : 57, 4 : 66, 5 : 75}
         return address_side[side]
 
     def update_color_state(self, side, color_state):
-
+        """
+        Method for updating the color-addresses
+        with the correctly applied color-code
+        """
         # starting address depending on the given side
         start_address = self.get_address_side(side)
 
@@ -54,21 +60,18 @@ class ModbusClient():
             start_address += 1
 
     def send_color_code(self, addr, val):
+        """
+        Helper method sending the code to given address
+        :param addr: the address to write
+        :param val: the value to send
+        """
         self.client.write_register(addr, val, unit=1)
-
-    def read_int(self, your_address, your_value):
-        """
-        Reads a register address for checking value, this method is primarily used for
-        error-checking or debugging without visual confirmation of the numbers in the
-        given adresses
-        """
-        response = self.client.read_holding_registers(your_address, your_value, unit=1)
-        return response
 
     def get_picture_command(self):
         """
         Check if we're commaneded to take a picture. The coil we're subscribing to is usually
         controlled on the other end. We need to change this to False when we're taken the picture
+        :return: true / false 
         """
         coil_info = self.client.read_coils(0, 1, unit=1)
         is_picture_ready = coil_info.bits[0]
@@ -76,20 +79,23 @@ class ModbusClient():
 
     def reset_picture_command(self):
         """
-        Set the take picture coil value to 0
-        Is used after we've taken the picture
+        Reset the picture-command
         """
         self.client.write_coil(0, 0, unit=1)
         
     def set_confirm_picture_taken(self):
         """
         Confirm that we've taken a picture to the coil at the given address
-        Usually read at the other end
+        (Usually read at the other end)
         """
         self.client.write_coil(1, 1, unit=1)
 
-    # Helper method to convert notation to integers
     def get_return_code(self, value):
+        """
+        Helper method to convert movement-command to movement-code
+        :param: the notation to check
+        :return: the movement-code
+        """
         if value == "B": return 1
         elif value == "U": return 2
         elif value == "L": return 3
@@ -112,6 +118,10 @@ class ModbusClient():
         elif value == "F2": return 18
 
     def get_notation_to_code(self, notation):
+        """ Helper method for converting notation to correct side-color
+        :param: the notation to check
+        :return: the color code
+        """
         if notation == "U": return 0   # white
         elif notation == "F": return 5 # green
         elif notation == "L": return 3 # red
@@ -120,12 +130,20 @@ class ModbusClient():
         elif notation == "D": return 4 # yellow
 
     def send_algorithm(self, answer):
+        """
+        Method for sending the required
+        movements for solving the cube,
+        one move for each address
+        :param: a rubiks-cube-string 
+        """
+        # starting_address is 0
         data = answer.split(" ")
         for x in range(len(data)):
             val = int(self.get_return_code(data[x]))
             self.send_move(x, val)
 
 
+""" For testing purposes """
 if __name__ == "__main__":
 
     client = ModbusClient("10.22.177.89", port=502)

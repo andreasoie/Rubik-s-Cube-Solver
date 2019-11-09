@@ -26,6 +26,16 @@ class WebCam:
         _, frame = self.cam.read()
         return frame
 
+    def test_method(self, yo, ya):
+        """
+        
+        :param yo:
+        :param ya:
+        :return:
+        """
+        x = 5
+        return x
+
     def get_sides(self):
         return self.sides
 
