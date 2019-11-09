@@ -38,16 +38,20 @@ class ModbusClient():
 
         return color_string
 
-    def update_color_state(self, color_state):
+    def get_address_side(self, side):
+            # starting address for each side
+        address_side = { 0: 30, 1 : 39, 2 : 48, 3 : 57, 4 : 66, 5 : 75}
+        return address_side[side]
 
-        color_list = self.convert_sides_to_string(color_state)
+    def update_color_state(self, side, color_state):
 
-        # starting address for sending  colors
-        address = 30
-        for lists in color_list:
-            for color in lists:
-                self.send_color_code(address, color)
-                address += 1
+        # starting address depending on the given side
+        start_address = self.get_address_side(side)
+
+        for notation in color_state:
+            color_code = self.get_notation_to_code(notation)
+            self.send_color_code(start_address, color_code)
+            start_address += 1
 
     def send_color_code(self, addr, val):
         self.client.write_register(addr, val, unit=1)
@@ -70,7 +74,6 @@ class ModbusClient():
         is_picture_ready = coil_info.bits[0]
         return is_picture_ready
 
-        #TODO: Double check if this method works
     def reset_picture_command(self):
         """
         Set the take picture coil value to 0
@@ -84,8 +87,6 @@ class ModbusClient():
         Usually read at the other end
         """
         self.client.write_coil(1, 1, unit=1)
-        #picture_taken = coil_info.bits[1]
-        #return picture_taken
 
     # Helper method to convert notation to integers
     def get_return_code(self, value):
@@ -112,11 +113,11 @@ class ModbusClient():
 
     def get_notation_to_code(self, notation):
         if notation == "U": return 0   # white
-        elif notation == "F": return 1 # green
-        elif notation == "L": return 4 # red
-        elif notation == "B": return 5 # blue
-        elif notation == "R": return 3 # orange
-        elif notation == "D": return 2 # yellow
+        elif notation == "F": return 5 # green
+        elif notation == "L": return 3 # red
+        elif notation == "B": return 1 # blue
+        elif notation == "R": return 2 # orange
+        elif notation == "D": return 4 # yellow
 
     def send_algorithm(self, answer):
         data = answer.split(" ")

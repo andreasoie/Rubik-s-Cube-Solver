@@ -25,6 +25,20 @@ class WebCam():
     def get_sides(self):
         return self.sides
 
+    def get_side(self, numbr):
+        return self.sides[self.code_to_notation(numbr)]
+        
+    def code_to_notation(self, color):
+        notation_colors = {
+                0 : 'U',
+                1 : 'F',
+                2 : 'L',
+                3 : 'B',
+                4 : 'R',
+                5 : 'D'
+            }
+        return notation_colors[color]
+
     def get_sticker_coordinates(self, name):
         """
         Every array has 2 values: x and y.
@@ -104,9 +118,10 @@ class WebCam():
             roi          = hsv[y:y+32, x:x+32]
             avg_hsv      = ColorDetector.average_hsv(roi)
             color_name   = ColorDetector.get_color_name(avg_hsv)
+            print("Color: " + str(color_name) + " : " + str(avg_hsv))
             self.state[index] = color_name
 
-            # update when input is true
+            # update when we recieve camera-command from input-param
             if trigger: 
                 self.preview = list(self.state)
                 self.draw_preview_stickers(frame, self.state)
