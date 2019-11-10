@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author        : Andreas Øie
-# Created       : 09.11.2019
 
 from pymodbus.client.sync import ModbusTcpClient
 import time
@@ -25,6 +24,15 @@ class ModbusClient():
         :return: True if connection is active, False otherwise
         """
         return self.connection_status
+
+    def stop_running(self):
+        self.client.write_coil(3, 0, unit=1)
+
+    def get_running_status(self):
+        self.client.read_coils(3,0)
+        coil_status = self.client.read_coils(3, 1, unit=1)
+        run = coil_status.bits[0]
+        return run
 
     
     def send_move(self, your_address, your_value):

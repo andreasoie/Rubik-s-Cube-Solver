@@ -1,5 +1,5 @@
 # Rubik-s-Cube-Solver
-**Raspberry PI Raspian 3/4    
+**Raspberry PI 3/4  w/ Raspian   
 **Python 3+      
 
 ## OpenCV  

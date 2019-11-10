@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Author        : Kim K
-# Edited        : Andreas Øie
+# Author        : Andreas Øie
+
 class ColorDetection:
 
     def get_color_name(self, hsv):

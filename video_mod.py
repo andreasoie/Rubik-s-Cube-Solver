@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Author        : Kim K
-# Created       : Fri, 29 Jan 2016
-# Edited        : Andreas Øie
+# Author        : Andreas Øie
 
 from sys import exit as Die
 import sys
