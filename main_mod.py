@@ -41,17 +41,17 @@ if __name__ == '__main__':
                 client.set_confirm_picture_taken()
                 count += 1
             
-            if len(camera.get_sides()) == 6:
-                camera.shutdown_camera()
-                cube_state = camera.get_sides()
-                unsolved_state = combine.sides(cube_state)
+            if count == 6:
+                cube_state_sides = camera.get_sides()
+                unsolved_state = combine.sides(cube_state_sides)
                 try: 
                     algo = kociemba.solve(unsolved_state)
                 except ValueError:
+                    count = 0
                     client.stop_running()
                 
                 if running:
-                    print("Sending: " + algo)
+                    print("Sending steps: " + algo)
                     client.send_algorithm(algo)
                     break
 
