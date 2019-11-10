@@ -4,7 +4,7 @@
 
 from sys import exit as Die
 import kociemba
-from combiner import Combine
+from combiner import combine
 from video_mod import WebCam
 from modbus_comms import ModbusClient
 import cv2
@@ -15,15 +15,15 @@ import cv2
 
 if __name__ == '__main__':
 
+    # IP of PLC-Server
     client = ModbusClient("158.38.140.61", port=502)
-    combine = Combine()
 
     cam_cap = cv2.VideoCapture(0)
     camera = WebCam(cam_cap)
 
     key = cv2.waitKey(5) & 0xFF
 
-    count = 0
+    pictures = 0
 
     while client.is_connected():
 
@@ -35,19 +35,19 @@ if __name__ == '__main__':
             camera.scan(cam_trigger)
 
             if cam_trigger:
-                color_state = camera.get_side(count)
-                client.update_color_state(count, color_state)
+                color_state = camera.get_side(pictures)
+                client.update_color_state(pictures, color_state)
                 client.reset_picture_command()
                 client.set_confirm_picture_taken()
-                count += 1
+                pictures += 1
             
-            if count == 6:
+            if pictures == 6:
                 cube_state_sides = camera.get_sides()
                 unsolved_state = combine.sides(cube_state_sides)
                 try: 
                     algo = kociemba.solve(unsolved_state)
                 except ValueError:
-                    count = 0
+                    pictures = 0
                     client.stop_running()
                 
                 if running:
