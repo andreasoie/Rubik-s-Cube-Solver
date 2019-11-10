@@ -29,11 +29,13 @@ class ModbusClient():
         self.client.write_coil(3, 0, unit=1)
 
     def get_running_status(self):
+        """
+        Method for reading the progress-status 
+        """
         self.client.read_coils(3,0)
         coil_status = self.client.read_coils(3, 1, unit=1)
         run = coil_status.bits[0]
         return run
-
     
     def send_move(self, your_address, your_value):
         """
