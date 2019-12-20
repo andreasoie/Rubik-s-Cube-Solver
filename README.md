@@ -16,3 +16,10 @@ sudo apt install python3-opencv
 ##### Install the required libffi systemm library beforehand      
 sudo apt-get install libffi-dev     
 pip3 install kociemba    
+
+## Usage
+
+The assignment was to make an industrial robot useful  
+by using an industrial programmable logic controller.   
+For analyzing the state of the cube,   
+we used a Raspberry Pi with a camera for image processing.
