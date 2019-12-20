@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get upgrade    
 
 ##### Retrieve available stable releases    
-apt list python*opencv* (star-symbol before/after opencv)    
+apt list python¤opencv¤ (replace ¤ with *)    
 sudo apt install python3-opencv     
 
 ## Kociamba  
@@ -19,7 +19,5 @@ pip3 install kociemba
 
 ## Usage
 
-The assignment was to make an industrial robot useful  
-by using an industrial programmable logic controller.   
-For analyzing the state of the cube,   
-we used a Raspberry Pi with a camera for image processing.
+The assignment was to make an industrial robot useful by using an industrial programmable logic controller.     
+For analyzing the state of the cube, we used a Raspberry Pi with a camera for image processing.  
