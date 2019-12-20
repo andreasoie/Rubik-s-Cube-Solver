@@ -1,23 +1,43 @@
 # Rubik-s-Cube-Solver
+
+## Installing
+
+Once your Raspberry is up and running.
+
+```bash
+   sudo apt-get update
+   sudo apt-get upgrade
+   
+   
+   # Retrieve available stable releases
+   apt list python¤opencv¤ (replace ¤ with *)    
+   sudo apt install python3-opencv
+   
+   # Install the required libffi system library      
+   sudo apt-get install libffi-dev     
+   pip3 install kociemba    
+
+```
+
+
+
+## Setup
+
 Raspberry PI 4  w/ Raspian Buster
 Python 3+      
 
-## OpenCV  
- 
-sudo apt-get update    
-sudo apt-get upgrade    
+## Built With
 
-##### Retrieve available stable releases    
-apt list python¤opencv¤ (replace ¤ with *)    
-sudo apt install python3-opencv     
+* [Python](https://www.python.org/) - Python
 
-## Kociamba  
-
-##### Install the required libffi systemm library beforehand      
-sudo apt-get install libffi-dev     
-pip3 install kociemba    
 
 ## Usage
 
 The assignment was to make an industrial robot useful by using an industrial programmable logic controller.     
 For analyzing the state of the cube, we used a Raspberry Pi with a camera for image processing.  
+
+## Contributing
+
+If you want to contribute or find anything wrong, please create a Pull request, or issue addressing the change, or issue.
+
+
