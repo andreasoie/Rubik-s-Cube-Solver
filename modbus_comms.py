@@ -32,7 +32,6 @@ class ModbusClient():
         """
         Method for reading the progress-status 
         """
-        self.client.read_coils(3,0)
         coil_status = self.client.read_coils(3, 1, unit=1)
         run = coil_status.bits[0]
         return run
@@ -91,7 +90,9 @@ class ModbusClient():
         """
         Reset the picture-command
         """
+        #print("Resetting START")
         self.client.write_coil(0, 0, unit=1)
+        #print("Resetting STOP ")
         
     def set_confirm_picture_taken(self):
         """

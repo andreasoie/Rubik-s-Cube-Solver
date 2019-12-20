@@ -9,6 +9,11 @@ from colordetection import ColorDetector
 
 
 class WebCam():
+
+    """
+    This class represents the state of the Rubik's Cube given
+    by the scanned sides with the WebCam
+    """
     
     def __init__(self, the_camera):
         self.cam              = the_camera
@@ -18,20 +23,39 @@ class WebCam():
         self.sides   = {}
         self.preview = ['white','white','white','white','white','white','white','white','white']
         self.state   = [0,0,0,0,0,0,0,0,0]
-
+        
     def get_sides(self):
+        """
+        Returns the state of the Cube
+        """
         return self.sides
+    
+    def reset_sides(self):
+        """
+        Helper method for resetting the state of the Cube
+        """
+        self.sides   = {}
+        self.preview = ['white','white','white','white','white','white','white','white','white']
+        self.state   = [0,0,0,0,0,0,0,0,0]
 
     def get_side(self, numbr):
+        """
+        Returns a spesific side given by the number required
+        :param numbr: the side number to retrieve
+        """
         return self.sides[self.code_to_notation(numbr)]
         
     def code_to_notation(self, color):
+        """
+        Helper method for return the notation of the given color code
+        :param color: the color (number) to retrieve
+        """
         notation_colors = {
                 0 : 'U',
                 1 : 'F',
-                2 : 'L',
+                2 : 'R',
                 3 : 'B',
-                4 : 'R',
+                4 : 'L',
                 5 : 'D'
             }
         return notation_colors[color]
@@ -99,14 +123,20 @@ class WebCam():
     def shutdown_camera(self):
         self.cam.release()
         cv2.destroyAllWindows()
-        print("Releasing camera")
-        print("Destroying window")
+        #print("Releasing camera")
+        #print("Destroying window")
+        
+    def shutdown_camera_window(self):
+        #print("Destroying window")
+        cv2.destroyAllWindows()
 
     def scan(self, trigger):
         
         _, frame = self.cam.read()
         
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        key = cv2.waitKey(10) & 0xff
         
         self.draw_main_stickers(frame)
         self.draw_preview_stickers(frame, self.preview)
@@ -115,7 +145,7 @@ class WebCam():
             roi          = hsv[y:y+32, x:x+32]
             avg_hsv      = ColorDetector.average_hsv(roi)
             color_name   = ColorDetector.get_color_name(avg_hsv)
-            print("Color: " + str(color_name) + " : " + str(avg_hsv))
+            #print("Color: " + str(color_name) + ", avg_hsv  :  " + str(avg_hsv))
             self.state[index] = color_name
 
             # update when we recieve camera-command from input-param
@@ -125,6 +155,7 @@ class WebCam():
                 face = self.color_to_notation(self.state[4])
                 notation = [self.color_to_notation(color) for color in self.state]
                 self.sides[face] = notation
+                #print(self.sides)
 
         # show the new stickers
         self.draw_current_stickers(frame, self.state)

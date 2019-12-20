@@ -18,9 +18,9 @@ class ColorDetection:
             return 'orange'
         elif h > 95 and h < 110 and s > 25 and s < 55:
             return 'white'
-        elif h > 20 and h < 40 and s > 100 and s < 170:
+        elif h > 20 and h < 40 and s > 100 and s < 200: # s > 100
             return 'yellow'
-        elif h > 75 and h < 85:
+        elif h > 75 and h < 92: #85
             return 'green'
         elif h > 105 and h < 115 and s > 210 and s < 255:
             return 'blue'
