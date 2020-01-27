@@ -38,6 +38,11 @@ For analyzing the state of the cube, we used a Raspberry Pi with a camera for im
 
 ## Contributing
 
+## Project in motion 
+
+[![](http://img.youtube.com/vi/3zClexUpRI4/0.jpg)](http://www.youtube.com/watch?v=3zClexUpRI4 "Solving a Rubik's Cube")
+
+
 If you want to contribute or find anything wrong, please create a Pull request, or issue addressing the change, or issue.
 
 
