@@ -36,12 +36,13 @@ Python 3+
 The assignment was to make an industrial robot useful by using an industrial programmable logic controller.     
 For analyzing the state of the cube, we used a Raspberry Pi with a camera for image processing.  
 
-## Contributing
-
+## Demo
 
 [![DEMO](http://img.youtube.com/vi/3zClexUpRI4/0.jpg)](http://www.youtube.com/watch?v=3zClexUpRI4 "Solving a Rubik's Cube")
 
 
+
+## Contributing
 If you want to contribute or find anything wrong, please create a Pull request, or issue addressing the change, or issue.
 
 
